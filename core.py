@@ -3,6 +3,7 @@ import websocket
 import json
 import ast
 import time
+import sys
 
 ###############################################################################
 ###############################################################################
@@ -170,6 +171,7 @@ def send(getReply=1, timeout=3, suppressError=False, **kwargs):
 	(message, idNum) = composeMessage(**kwargs)
 	wsa.send(message)
 	global results
+	timeout *= 10
 	if getReply:
 		while timeout:
 			for i in range(len(results)):
@@ -179,7 +181,7 @@ def send(getReply=1, timeout=3, suppressError=False, **kwargs):
 						print("No result received from mopidy...")
 						return None
 					return results[i]['result']
-			time.sleep(1)
+			time.sleep(0.1)
 			timeout -= 1
 		if not suppressError:
 			print("Server took too long to respond...")

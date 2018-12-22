@@ -8,3 +8,8 @@ No requirements file yet, but you need mopidy-soundcloud, spotify and gmusic
 as well as websocket + websocket-client.
 
 Mopidy obviously needs to be configured with your logins first.
+
+USAGE:
+
+Run mopidy in a separate terminal, then run main.py.
+"man" gives you some basic commands and their usages

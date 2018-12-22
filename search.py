@@ -49,8 +49,8 @@ def search(search_terms=None, adding=False):
 			send(getReply=0, method=M['tracklist']['add'], uris=uris)
 		else:
 			send(getReply=0, method=M['tracklist']['add'], uris=[uris])
-		if not adding:
-			send(getReply=0, method=M['playback']['play'])
+	# something like: if not playing, play
+	# so that when searching for a song before playing anything it plays straight away
 
 # returns correct list from results depending on source
 def getResultsOfSource(results, source):

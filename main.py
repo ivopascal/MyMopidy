@@ -36,20 +36,20 @@ thread.daemon = True
 # starts the threads
 thread.start()
 # wait for thread+connection to open
-time.sleep(1)
+time.sleep(0.5)
 
 ###############################################################################
 
 manual =  {
 	"clear" : "Clears the tracklist including the currently playing song",
-	"play" : "Play song (only works if tracklist is not empty)",
-	"pause" : "Pause song",
+	"play" : "Play tracklist",
+	"pause" : "Pause tracklist",
 	"tracklist" : "Show the current tracklist",
-	"next" : "Play the next song in the tracklist",
-	"prev/previous" : "Play the previous song in the tracklist",
-	"playlist" : "Play a playlist via user input (takes optional arguments).",
-	"search" : "Searches via user input (takes optional arguments).",
-	"random" : "Toggles random (takes arguments to toggle)",
+	"next (int)" : "Play the next song in the tracklist (times x)",
+	"prev/previous (int)" : "Play the previous song in the tracklist (times x)",
+	"playlist" : "Play a playlist via user input (takes optional search term).",
+	"search" : "Searches via user input (takes optional search term).",
+	"random" : "Toggles random (takes arguments to toggle) NOT WORKING",
 	"exit/quit" : "Exits the script."
 }
 
@@ -79,10 +79,28 @@ else:
 			showTracklist()
 
 		if command == "next":
-			send(getReply=0, method=M['playback']['next'])
+			if args:
+				try:
+					count = int(args[0])
+					for i in range(count):
+						send(getReply=0, method=M['playback']['next'])
+						time.sleep(0.1)
+				except ValueError:
+					print("Input argument must be an int, try again")
+			else:
+				send(getReply=0, method=M['playback']['next'])
 
 		if command in ["prev", "previous"]:
-			send(getReply=0, method=M['playback']['previous'])
+			if args:
+				try:
+					count = int(args[0])
+					for i in range(count):
+						send(getReply=0, method=M['playback']['previous'])
+						time.sleep(0.1)
+				except ValueError:
+					print("Input argument must be an int, try again")
+			else:
+				send(getReply=0, method=M['playback']['previous'])
 
 		if command == "playlist":
 			playPlaylist(args)
@@ -106,7 +124,7 @@ else:
 
 		if command in ["exit", "quit"]:
 			wsa.close()
-			time.sleep(1)
+			time.sleep(0.5)
 			break
 
 ###############################################################################
