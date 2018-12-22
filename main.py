@@ -45,6 +45,7 @@ manual =  {
 	"play" : "Play tracklist",
 	"pause" : "Pause tracklist",
 	"tracklist" : "Show the current tracklist",
+	"edit" : "Goes into the tracklist edit loop. Currently supports remove (int) and add via search"
 	"next (int)" : "Play the next song in the tracklist (times x)",
 	"prev/previous (int)" : "Play the previous song in the tracklist (times x)",
 	"playlist" : "Play a playlist via user input (takes optional search term).",
