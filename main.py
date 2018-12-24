@@ -14,6 +14,9 @@ from search import search
 
 # conform to PEP8
 # volume controls, with relative option via +- (save current vol)
+#
+# rework the websocket connection. better error handling, retry
+# connection on failt, better handling of results, etc
 
 ###############################################################################
 
@@ -112,6 +115,8 @@ else:
 
 ###############################################################################
 
+# simple proof of concept. leave this for much later
+
 # listen and return spoken text
 def getText(r, mic):
 	with mic as source:
@@ -136,70 +141,4 @@ def speechCommand():
 		playSong()
 	time.sleep(3)
 
-# maybe its a better idea to use the google voice kit
-
 ###############################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# check out how the setter function works
-
-
-
-'''
-	# toggles volume
-	@staticmethod
-	def command_on_off(args, getter, setter):
-		if args:
-			if args[0].lower() in {'on', 'yes', 'true'}:
-				new_value = True
-			elif args[0].lower() in {'off', 'no', 'false'}:
-				new_value = False
-		else:
-			current_value = getter(timeout=15)
-			new_value = not current_value
-
-		setter(new_value)
-
-	# sets volume
-	@staticmethod
-	def command_numeric(args, getter, setter, callback=None, step=1, res=1):
-		if args:
-			arg_value = args[0]
-			current_value = 0
-
-			relative = +1 if arg_value.startswith('+') \
-				else -1 if arg_value.startswith('-') \
-				else 0
-
-			if relative:
-				current_value = getter(timeout=15)
-				arg_value = arg_value[1:]
-			else:
-				relative = 1
-
-			if unicode(arg_value).isnumeric():
-				step = int(arg_value)
-			elif arg_value:
-				return
-
-			new_value = current_value + step * relative * res
-			new_value = max(new_value, 0)
-			setter(new_value)
-		else:
-			# No argument, get current value
-			getter(on_result=callback)
-
-'''
