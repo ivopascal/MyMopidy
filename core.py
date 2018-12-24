@@ -5,7 +5,18 @@ import ast
 import time
 
 ###############################################################################
-###############################################################################
+
+
+##
+### TODO:
+##
+
+# handle inputs better. support various types of inputs:
+# strings, integers, relative integers, integer ranges
+# maybe return the type of input and the list of inputs ? 
+#
+# probably a better way to do that
+
 ###############################################################################
 
 # server replies and the next message id
@@ -97,8 +108,6 @@ M['playlists'] = {
 }
 
 ###############################################################################
-###############################################################################
-###############################################################################
 
 # functions for the websocket app/connection
 def onMessage(wsa, message):
@@ -135,8 +144,6 @@ class wsaThread(threading.Thread):
 		self.wsa.run_forever()
 		print("Exiting", self.name)
 
-###############################################################################
-###############################################################################
 ###############################################################################
 
 # gets user input, split into command and args
@@ -188,6 +195,4 @@ def send(getReply=1, timeout=3, suppressError=False, **kwargs):
 		# reset results sometimes to prevent slowdown over time
 		results = []
 
-###############################################################################
-###############################################################################
 ###############################################################################

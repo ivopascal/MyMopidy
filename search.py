@@ -1,8 +1,25 @@
 from core import send, M
 from printing import printSelection
 
+###############################################################################
+
+
+##
+### TODO:
+##
+
+# check which sources are even available and only allow
+# those options! most people wont have all three
+#
+# google search only works with a single search term?
+# be able to pick more than one song from search
+# be able to pick songs even if artist is searched
+
+###############################################################################
+
+
 # plays whatever the user wants via input and search
-def search(search_terms=None, adding=False):
+def search(search_terms=None, adding=False, position=None):
 	if isinstance(search_terms, list) and not search_terms:
 		search_terms = None
 	if not search_terms:
@@ -45,10 +62,12 @@ def search(search_terms=None, adding=False):
 			uris = printAndGetURIs(results, "artists", source)
 
 	if uris != None:
-		if isinstance(uris, list):
+		if not isinstance(uris, list):
+			uris = [uris]
+		if position is None:
 			send(getReply=0, method=M['tracklist']['add'], uris=uris)
 		else:
-			send(getReply=0, method=M['tracklist']['add'], uris=[uris])
+			send(getReply=1, method=M['tracklist']['add'], uris=uris, at_position=position)
 	# something like: if not playing, play
 	# so that when searching for a song before playing anything it plays straight away
 

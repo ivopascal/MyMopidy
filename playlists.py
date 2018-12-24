@@ -2,6 +2,19 @@ from core import send, M
 from printing import printPlaylists
 import time
 
+###############################################################################
+
+
+##
+### TODO:
+##
+
+# show contents of a playlist
+# search adds song to playlist --> current song restarts
+
+###############################################################################
+
+
 # plays whatever playlist the user wants via input and search
 def playPlaylist(filterTerm=None):
 	if isinstance(filterTerm, list):
@@ -17,9 +30,6 @@ def playPlaylist(filterTerm=None):
 			return
 		else:
 			filterTerm = filterTerm.split()[0]
-
-	# if filter term is an integer within range, pick playlist straight away?
-	# then you can just pick one by number
 
 	playlists = send(method=M['playlists']["as_list"])
 	playlist = findPlaylist(playlists, filterTerm)
@@ -105,6 +115,9 @@ def playSpecificPlaylist(uri=None):
 		uris = getURIsFromPlaylist(uri)
 		if uris != None:
 			send(getReply=0, method=M['tracklist']['clear'])
+			#
+			# this can be improved. wait for reply, and then play?
+			#
 			send(getReply=0, method=M['tracklist']['add'], uris=uris)
 			time.sleep(2)
 			send(getReply=0, method=M['playback']['play'])

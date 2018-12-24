@@ -12,20 +12,8 @@ from search import search
 ### TODO:
 ##
 
-# volume controls
-# show contents of a playlist
-# search adds song to playlist --> current song restarts
-# google search only works with a single search term?
-# add multipliers for commands like next (eg: next 3)
-# be able to pick more than one song from search
-# be able to pick songs even if artist is searched
-
-# 	options
-# get state of options (random etc)
-# both set/get random and set/get consume dont work
-# options must be handled differently?
-
-
+# conform to PEP8
+# volume controls, with relative option via +- (save current vol)
 
 ###############################################################################
 
@@ -42,16 +30,20 @@ time.sleep(0.5)
 
 manual =  {
 	"clear" : "Clears the tracklist including the currently playing song",
+	"shuffle" : "Shuffles the tracklist order",
 	"play" : "Play tracklist",
 	"pause" : "Pause tracklist",
 	"tracklist" : "Show the current tracklist",
-	"edit" : "Goes into the tracklist edit loop. Currently supports remove (int) and add via search",
 	"next (int)" : "Play the next song in the tracklist (times x)",
-	"prev/previous (int)" : "Play the previous song in the tracklist (times x)",
-	"playlist" : "Play a playlist via user input (takes optional search term).",
+	"prev (int)" : "Play the previous song in the tracklist (times x)",
+	"playlist" : "Play a playlist via user input (takes optional search term) (needs \"play\" afterwards)",
 	"search" : "Searches via user input (takes optional search term).",
-	"random" : "Toggles random (takes arguments to toggle) NOT WORKING",
-	"exit/quit" : "Exits the script."
+	"exit/quit" : "Exits the script.",
+
+	"edit" : "Goes into the tracklist edit loop.",
+	"edit: add (int) (search term)" : "Adds a song at optional position x with optional search term, by default \"play next\"",
+	"edit: remove (int)" : "Removes the song at position x",
+	"edit: move (int (range)) (int)" : "Moves the songs at x (or from x to y) to position z (NOT IMPLEMENTED YET)"
 }
 
 if len(sys.argv) > 1 and sys.argv[1] == '-s':
@@ -59,13 +51,11 @@ if len(sys.argv) > 1 and sys.argv[1] == '-s':
 else:
 	while(True):
 		(command, args) = getInput()
-		if command == "consume":
-			# this is not working... 
-			print(send(method=M['tracklist']['get_consume']))
-			print(send(method=M['tracklist']['set_consume'], timeout=5, value=True))
-
 		if command == "clear":
 			send(getReply=0, method=M['tracklist']['clear'])
+
+		if command in ["shuffle", "random", "rand"]:
+			send(getReply=0, method=M['tracklist']['shuffle'])
 
 		if command == "play":
 			send(getReply=0, method=M['playback']['play'])
@@ -109,19 +99,11 @@ else:
 		if command == "search":
 			search(args)
 
-		# this is not working...
-		if command == "random":
-			if args:
-				if args[0].lower() in ["on", "yes", "true"]:
-					send(getReply=0, method=M['tracklist']['set_random'], value=True)
-				if args[0].lower() in ["off", "no", "false"]:
-					send(getReply=0, method=M['tracklist']['set_random'], value=False)
-			else:
-				print(send(method=M['tracklist']['get_random']))
-
 		if command in ["options", "help", "?", "man"]:
+			index = 0
 			for k,v in manual.items():
-				print(k, "-", v)
+				print(index, ")", k, "-", v)
+				index += 1
 
 		if command in ["exit", "quit"]:
 			wsa.close()

@@ -2,10 +2,26 @@ from core import send, M, getInput
 from search import search
 from printing import printIndex
 
+###############################################################################
+
+
+##
+### TODO:
+##
+
+# add move functionality, eg: move [2-4] 8
+# would move songs from index 2-4 after index 8
+# handle input better --> core
+
+###############################################################################
+
+
 def editTracklist():
 	while True:
 		# show (part of) tracklist
 		editor = showTracklist()
+		if not editor:
+			return None
 
 		# get input + optional arguments
 		(option, args) = getInput("What to do? ")
@@ -26,10 +42,17 @@ def editTracklist():
 				continue
 			editor.remove(selection)
 
-		# to add, just search (add possibility to "play next")
-		# or even better, to specify where to add it (by default: play next)
+		# to add, just search
 		if option in ["add", "search", "find"]:
-			editor.add(args)
+			search_terms = None
+			position = None
+			try:
+				if args:
+					position = int(args[0])
+			except ValueError:
+				if args:
+					search_terms = args
+			editor.add(search_terms=search_terms, position=position)
 
 		# add functionality to move songs around
 		if option in ["change", "move", "order"]:
@@ -44,29 +67,33 @@ def showTracklist():
 # manages the tracklist
 class tracklistEditor():
 	def __init__(self, tracklist):
-		self.tracks = []
-		track = dict()
-		for i in range(len(tracklist)):
-			track['index'] = i
-			track['tlid'] = tracklist[i]['tlid']
-			track['name'] = tracklist[i]['track']['name']
-			track['artist'] = tracklist[i]['track']['artists'][0]['name']
-			self.tracks.append(track)
+		if not tracklist:
+			print("Tracklist empty?")
+			return None
+		else:
+			self.tracks = []
 			track = dict()
+			for i in range(len(tracklist)):
+				track['index'] = i
+				track['tlid'] = tracklist[i]['tlid']
+				track['name'] = tracklist[i]['track']['name']
+				track['artist'] = tracklist[i]['track']['artists'][0]['name']
+				self.tracks.append(track)
+				track = dict()
 
-	# i dont like waiting for index to reply every time, but removing currently
-	# playing makes you lose control and forces you to wait for the song to end
 	def remove(self, index):
-		current = send(timeout=1, suppressError=True, method=M['tracklist']['index'])
+		current = send(timeout=2, suppressError=True, method=M['tracklist']['index'])
 		if index == current:
 			print("Can't remove currently playing track...")
 		else:
 			tlid = self.tracks[index]['tlid']
 			send(method=M['tracklist']['remove'], criteria={'tlid':[tlid]})
 
-	# add the option to "play next" the song instead of appending it to the end?
-	def add(self, search_terms=None):
-		search(search_terms, adding=True)
+	def add(self, search_terms=None, position=None):
+		if position is None:
+			# by default, "play next" which is at current index + 1
+			position = send(timeout=2, method=M['tracklist']['index']) + 1
+		search(search_terms=search_terms, adding=True, position=position)
 
 	def show(self):
 		print(len(self.tracks), "tracks in total.")
