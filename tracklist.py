@@ -9,19 +9,21 @@ from printing import printIndex
 ### TODO:
 ##
 
-# add move functionality, eg: move [2-4] 8
-# would move songs from index 2-4 after index 8
-# handle input better --> core
 
 ###############################################################################
 
 
 def editTracklist():
+	justShowedAll = False
 	while True:
-		# show (part of) tracklist
-		editor = showTracklist()
+		tracklist = send(method=M['tracklist']['get_tl_tracks'])
+		editor = tracklistEditor(tracklist)
 		if not editor:
 			return None
+		# show (part of) tracklist
+		if not justShowedAll:
+			editor.show()
+		justShowedAll = False
 
 		# get input + optional arguments
 		(option, args) = getInput("What to do? ")
@@ -29,6 +31,11 @@ def editTracklist():
 		# done
 		if option in ["done", "quit", "return"]:
 			return
+
+		# show entire tracklist
+		if option in ["all", "show", "full"]:
+			justShowedAll = True
+			editor.show(showAll=True)
 
 		# remove from tracklist (add possibility to specify multiple tracks)
 		if option in ["delete", "del", "remove"]:
@@ -54,14 +61,28 @@ def editTracklist():
 					search_terms = args
 			editor.add(search_terms=search_terms, position=position)
 
-		# add functionality to move songs around
+		# move songs around
 		if option in ["change", "move", "order"]:
-			print("Not implemented yet")
+			if args and len(args) in [2, 3]:
+				try:
+					if len(args) == 2:
+						start = end = int(args[0])
+						position = int(args[1])
+					else:
+						start = int(args[0])
+						end = int(args[1])
+						position = int(args[2])
+					editor.move(start, end, position)
+				except ValueError:
+					print("Invalid input...")
+					print("Format: move X Y Z / move Start End To_Position")
+			else:
+				print("Must be 3 arguments...")
 
-def showTracklist():
+def showTracklist(showAll=False):
 	tracklist = send(method=M['tracklist']['get_tl_tracks'])
 	editor = tracklistEditor(tracklist)
-	editor.show()
+	editor.show(showAll)
 	return editor
 
 # manages the tracklist
@@ -95,7 +116,10 @@ class tracklistEditor():
 			position = send(timeout=2, method=M['tracklist']['index']) + 1
 		search(search_terms=search_terms, adding=True, position=position)
 
-	def show(self):
+	def move(self, start, end, position):
+		send(timeout=0, method=M['tracklist']['move'], start=start, end=end, to_position=position)
+
+	def show(self, showAll=False):
 		print(len(self.tracks), "tracks in total.")
 		current = send(timeout=2, suppressError=True, method=M['tracklist']['index'])
 		if current == None:
@@ -106,7 +130,7 @@ class tracklistEditor():
 		end = tlsize
 		# if the tracklist has more than 15 tracks then show the 5 last,
 		# and the 10 next songs in the tracklist
-		if tlsize > 15:
+		if not showAll and tlsize > 15:
 			start = current-5
 			end = current+11
 			if start < 0:

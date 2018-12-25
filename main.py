@@ -35,18 +35,19 @@ manual =  {
 	"shuffle" : "Shuffles the tracklist order",
 	"play" : "Play tracklist",
 	"pause" : "Pause tracklist",
-	"vol (int)" : "Changes volume. Can also do relative inputs like \"-10\"",
-	"tracklist" : "Show the current tracklist",
-	"next (int)" : "Play the next song in the tracklist (times x)",
-	"prev (int)" : "Play the previous song in the tracklist (times x)",
+	"vol ((int))" : "Shows current volume, or changes it. Can also do relative inputs like \"-10\"",
+	"tracklist ((\"all\"))" : "Show the current tracklist. If \"all\" is given, shows everything",
+	"next ((int))" : "Play the next song in the tracklist (times x)",
+	"prev ((int))" : "Play the previous song in the tracklist (times x)",
 	"playlist" : "Play a playlist via user input (takes optional search term) (needs \"play\" afterwards)",
 	"search" : "Searches via user input (takes optional search term).",
 	"exit/quit" : "Exits the script.",
 
 	"edit" : "Goes into the tracklist edit loop.",
-	"edit: add (int) (search term)" : "Adds a song at optional position x with optional search term, by default \"play next\"",
+	"edit: show" : "Shows entire tracklist",
+	"edit: add ((int)) ((search term))" : "Adds a song at optional position x with optional search term, by default \"play next\"",
 	"edit: remove (int)" : "Removes the song at position x",
-	"edit: move (int (range)) (int)" : "Moves the songs at x (or from x to y) to position z (NOT IMPLEMENTED YET)"
+	"edit: move (int) (int) ((int))" : "Moves the song(s) at x (or from x to y, excluding y) to (after) position z"
 }
 
 if len(sys.argv) > 1 and sys.argv[1] == '-s':
@@ -73,7 +74,10 @@ else:
 			editTracklist()
 
 		if command == "tracklist":
-			showTracklist()
+			if args and args[0] == "all":
+				showTracklist(showAll=True)
+			else:
+				showTracklist()
 
 		if command == "next":
 			if args:
