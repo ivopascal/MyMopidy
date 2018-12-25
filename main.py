@@ -13,7 +13,6 @@ from search import search
 ##
 
 # conform to PEP8
-# volume controls, with relative option via +- (save current vol)
 #
 # rework the websocket connection. better error handling, retry
 # connection on failt, better handling of results, etc
