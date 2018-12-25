@@ -1,6 +1,6 @@
 import time
 import sys
-from core import send, M, wsa, wsaThread, getInput
+from core import send, M, wsa, wsaThread, getInput, setVolume
 from playlists import playPlaylist
 from tracklist import editTracklist, showTracklist
 from search import search
@@ -36,6 +36,7 @@ manual =  {
 	"shuffle" : "Shuffles the tracklist order",
 	"play" : "Play tracklist",
 	"pause" : "Pause tracklist",
+	"vol (int)" : "Changes volume. Can also do relative inputs like \"-10\"",
 	"tracklist" : "Show the current tracklist",
 	"next (int)" : "Play the next song in the tracklist (times x)",
 	"prev (int)" : "Play the previous song in the tracklist (times x)",
@@ -54,6 +55,9 @@ if len(sys.argv) > 1 and sys.argv[1] == '-s':
 else:
 	while(True):
 		(command, args) = getInput()
+		if command in ["vol", "volume"]:
+			setVolume(args)
+
 		if command == "clear":
 			send(getReply=0, method=M['tracklist']['clear'])
 

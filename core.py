@@ -157,6 +157,40 @@ def getInput(string=None):
 	args = inp[1:]
 	return (command, args)
 
+# sets the volume. can deal with relative input like -10
+def setVolume(arg=[]):
+	if not arg:
+		print("Current volume:", send(method=M['mixer']['get_volume']))
+		return
+	arg = arg[0]
+
+	relative = 0
+	if arg.startswith("+"):
+		relative = 1
+		arg = arg[1:]
+	elif arg.startswith("-"):
+		relative = -1
+		arg = arg[1:]
+
+	try:
+		arg = int(arg)
+	except ValueError:
+		print("Invalid input...")
+		return
+
+	if not relative:
+		newVol = arg
+	else:
+		currentVol = send(method=M['mixer']['get_volume'])
+		newVol = currentVol + relative * arg
+	if newVol > 100:
+		newVol = 100
+		print("Volume at maximum")
+	if newVol < 0:
+		newVol = 0
+		print("Volume muted")
+	send(timeout=0, method=M['mixer']['set_volume'], volume=newVol)
+
 # returns a suitable json msg and the corresponding id num
 def composeMessage(**kwargs):
 	global idNum
@@ -172,10 +206,12 @@ def composeMessage(**kwargs):
 	return (json.dumps(json_msg), idNum-1)
 
 # sends the message and returns the reply if needed
-# this really needs to be made more efficient, or call it less often
 def send(getReply=1, timeout=3, suppressError=False, **kwargs):
 	(message, idNum) = composeMessage(**kwargs)
 	wsa.send(message)
+	if not timeout:
+		# not interested in a reply
+		return
 	global results
 	timeout *= 10
 	if getReply:
