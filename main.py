@@ -27,7 +27,7 @@ thread.daemon = True
 thread.start()
 # wait for thread+connection to open
 time.sleep(0.5)
-print("Started wsa")
+
 
 ###############################################################################
 
